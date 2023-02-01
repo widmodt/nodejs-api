@@ -1,12 +1,15 @@
+import 'reflect-metadata'
 import { Router, Response } from "express";
-import { LoggerService } from "../logger/logger.service";
+import { injectable } from "inversify";
+import { ILogger } from "../logger/ILogger";
 import { IControllerRoute } from "./Iroutes";
 export { Router } from 'express'
 
+@injectable()
 export abstract class BaseController {
   private readonly _router: Router
   
-  constructor(private logger: LoggerService) {
+  constructor(private logger: ILogger) {
     this._router = Router()
   }
 
@@ -18,7 +21,7 @@ export abstract class BaseController {
     res.type('application/json')
     return res.status(code).json(message)
   }
-
+  
   public ok<T>(res: Response,  message: T) {
     return this.send<T>(res, 200, message)
   }

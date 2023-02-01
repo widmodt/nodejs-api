@@ -1,13 +1,17 @@
+import 'reflect-metadata'
 import { Request, Response, NextFunction } from "express";
+import { inject, injectable } from "inversify";
 import { BaseController } from "../common/base.controller";
-import { HTTPError } from "../errors/http-error";
-import { LoggerService } from "../logger/logger.service";
+import { ILogger } from "../logger/ILogger";
+import { TYPES } from "../types";
+import { IUserController } from './users.interface';
 
-export class UserController extends BaseController {
-  // userRouter: Router
 
-  constructor(logger: LoggerService) {
-    super(logger)
+@injectable()
+export class UserController extends BaseController  implements IUserController {
+
+  constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
+    super(loggerService)
     // this.userRouter = this.router 
     this.bindRoutes([{
       path: '/login',
@@ -28,8 +32,7 @@ export class UserController extends BaseController {
   } 
   
   login(req: Request, res: Response, next: NextFunction) {
-    next(new HTTPError(401, 'autorization error'))
+    this.loggerService.log(`login`)
     this.ok(res, 'login')
-    res.send('login')
   } 
 }
